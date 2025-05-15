@@ -1,3 +1,4 @@
+// 📁 src/app/dashboard/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -19,7 +20,7 @@ export default function DashboardPage() {
 
   return (
     <Container maxWidth="sm" sx={{ mt: 8 }}>
-      {user && <Typography variant="h5" gutterBottom>Your Welcome : {user.email}</Typography>}
+      {user && <Typography variant="h4">WELCOME : {user.email}</Typography>}
       <Button href="/logout" variant="outlined" color="error" sx={{ mt: 3 }}>
         Logout
       </Button>

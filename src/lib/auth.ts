@@ -1,5 +1,6 @@
+// 📁 src/lib/auth.ts
 export const login = (email: string, password: string): boolean => {
-  if (email === 'lex@gmail.com' && password === '543429') {
+  if (email === 'lex@gmail.com' && password === '12121212') {
     if (typeof window !== 'undefined') {
       localStorage.setItem('user', JSON.stringify({ email }));
     }
