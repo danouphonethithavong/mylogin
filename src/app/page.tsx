@@ -12,7 +12,7 @@ export default function HomePage() {
       <Box
         display="flex"
         flexDirection="column"
-        alignItems="center"
+        alignItems="center" 
         justifyContent="center"
         minHeight="100vh"
         textAlign="center"

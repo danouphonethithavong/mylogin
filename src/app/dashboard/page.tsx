@@ -1,9 +1,10 @@
-// 📁 src/app/dashboard/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getUser, isAuthenticated } from '@/lib/auth';
+import HomeIcon from '@mui/icons-material/Home';
+import LogoutIcon from '@mui/icons-material/Logout';
 import {
   AppBar,
   Box,
@@ -14,61 +15,87 @@ import {
   Drawer,
   List,
   ListItemButton,
-  ListItemText
+  ListItemText,
+  IconButton
+  
 } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 
 export default function DashboardPage() {
-  const router = useRouter(); // ใช้สำหรับเปลี่ยนหน้า
-  const [user, setUser] = useState<{ email: string } | null>(null); // สร้าง state สำหรับเก็บข้อมูลผู้ใช้
+  const router = useRouter();
+  const [user, setUser] = useState<{ email: string } | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false); // state สำหรับควบคุม Drawer
 
   useEffect(() => {
-    // เมื่อโหลด component ให้ตรวจสอบว่า login แล้วหรือยัง
     if (!isAuthenticated()) {
-      router.replace('/login'); // ถ้ายังไม่ login ให้ไปหน้า login
+      router.replace('/login');
     } else {
-      setUser(getUser()); // ถ้า login แล้ว ให้ดึงข้อมูลผู้ใช้มาเก็บใน state
+      setUser(getUser());
     }
   }, []);
 
-  const drawerWidth = 200; // ความกว้างของ Sidebar
+  const toggleDrawer = (open: boolean) => () => {
+    setDrawerOpen(open);
+  };
 
   return (
-    <Box sx={{ display: 'flex' }}> {/* ใช้ Flex layout สำหรับจัดหน้าแบ่งซ้าย-ขวา */}
-      
-      {/* Header ด้านบน */}
+    <Box sx={{ display: 'flex' }}>
+      {/* AppBar */}
       <AppBar
         position="fixed"
         sx={{
-          height: '70px', // ความสูงไม่เกิน 70px
+          height: '70px',
           justifyContent: 'center',
-          zIndex: (theme) => theme.zIndex.drawer + 1, // ให้อยู่ด้านบนของ Drawer
+          zIndex: (theme) => theme.zIndex.drawer + 1,
         }}
       >
         <Toolbar>
+          {/* ปุ่มสามขีด */}
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="start"
+            onClick={toggleDrawer(true)}
+            sx={{ mr: 2 }}
+          >
+            <MenuIcon />
+          </IconButton>
+            <HomeIcon style={{marginRight: '5px'}}>
+            startIcon={<HomeIcon />}
+          </HomeIcon>
           <Typography variant="h6" noWrap component="div">
             Dashboard
           </Typography>
+          
+          <Box sx={{ flexGrow: 1 }} />
+
+          <Button
+            href="/logout"
+            variant="outlined"
+            color="inherit"
+            >      
+            Logout:
+            <LogoutIcon >
+              startIcon={< LogoutIcon/>}
+            </LogoutIcon>
+          </Button>
         </Toolbar>
       </AppBar>
 
-      {/* Sidebar เมนูด้านซ้าย */}
+      {/* Drawer แบบ Slide จากซ้าย */}
       <Drawer
-        variant="permanent"
+        anchor="left"
+        open={drawerOpen}
+        onClose={toggleDrawer(false)}
         sx={{
-          width: drawerWidth,
-          flexShrink: 0,
           [`& .MuiDrawer-paper`]: {
-            backgroundColor: '#9c27b0', // สีม่วง
-            color: '#fff', // ตัวอักษรสีขาว
-            width: drawerWidth,
-            marginTop: '70px', // ขยับลงจาก Header
-            height: 'calc(100% - 70px)', // เต็มหน้าจอ ลบส่วนของ Header
-            boxSizing: 'border-box',
+            backgroundColor: '#9c27b0',
+            color: '#fff',
+            width: 200,
           },
         }}
       >
-        <List>
-          {/* เมนู Sidebar แต่ละรายการ */}
+        <List sx={{ mt: '70px' }}>
           <ListItemButton component="a" href="/dashboard">
             <ListItemText primary="HI" />
           </ListItemButton>
@@ -84,36 +111,37 @@ export default function DashboardPage() {
           <ListItemButton component="a" href="/dashboard">
             <ListItemText primary="HEY BRO" />
           </ListItemButton>
+          <ListItemButton component="a" href="/products">
+            <ListItemText primary="products" />
+          </ListItemButton>
+          <ListItemButton component="a" href="/users">
+            <ListItemText primary="users" />
+          </ListItemButton>
         </List>
       </Drawer>
 
-      {/* ส่วนเนื้อหาหลักด้านขวา */}
+      {/* Main Content */}
       <Box
         component="main"
         sx={{
-          flexGrow: 1, // ขยายให้เต็มที่
-          mt: '70px', // ขยับลงจาก Header
-          ml: `${drawerWidth}px`, // ขยับจาก Sidebar
-          p: 2, // padding ภายในกล่อง
+          flexGrow: 1,
+          mt: '70px',
+          p: 2,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '50vh',
+          
         }}
       >
-        <Container maxWidth="lg" sx={{ ml: '10px', mr: '20px' }}>
-          {/* ถ้ามีข้อมูลผู้ใช้ ให้แสดงข้อความต้อนรับ */}
+        <Container maxWidth="sm"
+        sx={{ textAlign: 'center'}}
+        >
           {user && (
             <Typography variant="h4" gutterBottom>
               WELCOME : {user.email}
             </Typography>
           )}
-
-          {/* ปุ่ม Logout */}
-          <Button
-            href="/logout"
-            variant="outlined"
-            color="error"
-            sx={{ mt: 3 }}
-          >
-            Logout
-          </Button>
         </Container>
       </Box>
     </Box>
